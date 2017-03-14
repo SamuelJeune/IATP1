@@ -71,19 +71,45 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		//delta < epsilon 
 		this.delta=0.0;
 		//*** VOTRE CODE
-		
+
+
 		
 		// mise a jour vmax et vmin pour affichage du gradient de couleur:
 		//vmax est la valeur  max de V  pour tout s
 		//vmin est la valeur min de V  pour tout s
 		// ...
 		
-		//******************* laisser la notification a la fin de la methode	
+		//******************* laisser la notification a la fin de la methode
+
+        HashMap<Etat, Double> Vk = new HashMap<Etat,Double>();
+        List<Action> actions = null;
+        Map<Etat,Double> transition = null;
+        double value = 0;
+        double maxval = 0;
+        for (Map.Entry<Etat,Double> entry: Vk.entrySet()){
+            actions = mdp.getActionsPossibles(entry.getKey());
+            int val = 0;
+
+            for (Action action:actions){
+                try{
+                    transition = mdp.getEtatTransitionProba(entry.getKey(), action);
+                    for (Map.Entry<Etat,Double> transi:transition.entrySet()){
+                        value = transi.getValue()*(mdp.getRecompense(entry.getKey(),action, transi.getKey())*gamma*(V.get(V.keySet())));
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+                if (value>maxval){
+                    maxval = value;
+                }
+            }
+        }
+
 		this.notifyObs();
 	}
-	
-	
-	/**
+
+    /**
 	 * renvoi l'action executee par l'agent dans l'etat e 
 	 * Si aucune actions possibles, renvoi Action2D.NONE
 	 */
