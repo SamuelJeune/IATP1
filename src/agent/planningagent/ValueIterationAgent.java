@@ -66,48 +66,91 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	 */
 	@Override
 	public void updateV(){
+		double vtemp = 0.0;
+		double vsum = 0.0;
 		//delta est utilise pour detecter la convergence de l'algorithme
 		//lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
-		//delta < epsilon 
+		//delta < epsilon
 		this.delta=0.0;
 		//*** VOTRE CODE
+		this.vmax = 0;
+		this.vmin = 0;
+		for (Etat etat : this.mdp.getEtatsAccessibles()) {
+			vtemp = 0.0;
+			for(Action action : this.mdp.getActionsPossibles(etat)) {
+				try {
+					Map<Etat, Double> transitionProba = mdp.getEtatTransitionProba(etat, action);
+					vsum = 0.0;
+					for (Map.Entry<Etat, Double> etatPossible : transitionProba.entrySet()) {
+						vsum += etatPossible.getValue() * (this.mdp.getRecompense(etat, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				vtemp = Math.max(vtemp, vsum);
+			}
+			this.delta = Math.max(this.delta, Math.abs(vtemp - this.V.get(etat)));
+			V.put(etat, vtemp);
 
 
-		
-		// mise a jour vmax et vmin pour affichage du gradient de couleur:
-		//vmax est la valeur  max de V  pour tout s
-		//vmin est la valeur min de V  pour tout s
-		// ...
-		
+			// mise a jour vmax et vmin pour affichage du gradient de couleur:
+			//vmax est la valeur  max de V  pour tout s
+			//vmin est la valeur min de V  pour tout s
+			this.vmax = Math.max(this.vmax, this.V.get(etat));
+			this.vmin = Math.min(this.vmin, this.V.get(etat));
+		}
+
+
 		//******************* laisser la notification a la fin de la methode
-
-        HashMap<Etat, Double> Vk = new HashMap<Etat,Double>();
-        List<Action> actions = null;
-        Map<Etat,Double> transition = null;
-        double value = 0;
-        double maxval = 0;
-        for (Map.Entry<Etat,Double> entry: Vk.entrySet()){
-            actions = mdp.getActionsPossibles(entry.getKey());
-            int val = 0;
-
-            for (Action action:actions){
-                try{
-                    transition = mdp.getEtatTransitionProba(entry.getKey(), action);
-                    for (Map.Entry<Etat,Double> transi:transition.entrySet()){
-                        value = transi.getValue()*(mdp.getRecompense(entry.getKey(),action, transi.getKey())*gamma*(V.get(V.keySet())));
-                    }
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
-                if (value>maxval){
-                    maxval = value;
-                }
-            }
-        }
-
 		this.notifyObs();
 	}
+
+
+//	public void updateV(){
+//		//delta est utilise pour detecter la convergence de l'algorithme
+//		//lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
+//		//delta < epsilon
+//		this.delta=0.0;
+//		//*** VOTRE CODE
+//
+//
+//
+//		// mise a jour vmax et vmin pour affichage du gradient de couleur:
+//		//vmax est la valeur  max de V  pour tout s
+//		//vmin est la valeur min de V  pour tout s
+//		// ...
+//
+//		//******************* laisser la notification a la fin de la methode
+//
+//        HashMap<Etat, Double> Vk = V;
+//        List<Action> actions = null;
+//        Map<Etat,Double> transition = null;
+//        double maxval = 0;
+//		int sum = 0;
+//        for (Etat etat:this.mdp.getEtatsAccessibles()){
+//            actions = mdp.getActionsPossibles(etat);
+//			sum = 0;
+//            for (Action action:actions){
+//                try{
+//                    transition = mdp.getEtatTransitionProba(etat, action);
+//					for (Map.Entry<Etat, Double> etatPossible : transition.entrySet()) {
+//						sum += etatPossible.getValue() * (this.mdp.getRecompense(etat, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
+//						System.out.println(gamma*(V.get(etatPossible.getKey())));
+//                    }
+//					if (sum>maxval){
+//						maxval = sum;
+//					}
+//                }
+//                catch(Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//			this.delta = Math.max(this.delta, Math.abs(maxval - this.V.get(etat)));
+//			V.put(etat,maxval);
+//			}
+//
+//		this.notifyObs();
+//	}
 
     /**
 	 * renvoi l'action executee par l'agent dans l'etat e 
@@ -116,8 +159,10 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	@Override
 	public Action getAction(Etat e) {
 		List<Action> actions = this.getPolitique(e);
-		if (actions.size() == 0)
+		if (actions.size() == 0) {
+			System.out.println("Action2D.NONE");
 			return Action2D.NONE;
+		}
 		else{//choix aleatoire
 			return actions.get(rand.nextInt(actions.size()));
 		}
@@ -133,17 +178,41 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	 * (plusieurs actions sont renvoyees si valeurs identiques, liste vide si aucune action n'est possible)
 	 */
 	@Override
+
 	public List<Action> getPolitique(Etat _e) {
 		//*** VOTRE CODE
-		
-		// retourne action de meilleure valeur dans _e selon V, 
+		// retourne action de meilleure valeur dans _e selon V,
 		// retourne liste vide si aucune action legale (etat absorbant)
 		List<Action> returnactions = new ArrayList<Action>();
-	
+		double psum = 0.0;
+		double ptemp = 0.0;
+		Map<Action, Double> ptempList = new HashMap<>();
+
+		for(Action action : this.mdp.getActionsPossibles(_e)) {
+			try {
+				Map<Etat, Double> transitionProba = mdp.getEtatTransitionProba(_e, action);
+				psum = 0.0;
+				for (Map.Entry<Etat, Double> etatPossible : transitionProba.entrySet()) {
+					psum += etatPossible.getValue() * (this.mdp.getRecompense(_e, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			ptempList.put(action, psum);
+			ptemp = Math.max(ptemp, psum);
+		}
+
+		for (Map.Entry<Action, Double> ptempListPossible : ptempList.entrySet()) {
+			if(ptempListPossible.getValue() == ptemp)
+				returnactions.add(ptempListPossible.getKey());
+		}
+
 		return returnactions;
-		
+
 	}
-	
+
+
+
 	@Override
 	public void reset() {
 		super.reset();
