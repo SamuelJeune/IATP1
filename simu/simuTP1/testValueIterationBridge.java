@@ -13,22 +13,20 @@ public class testValueIterationBridge {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		  SwingUtilities.invokeLater(new Runnable(){
-				public void run(){
-		
-					GridworldMDP gmdp = GridworldMDP.getBridgeGrid();
-					GridworldEnvironnement g = new GridworldEnvironnement(gmdp);
+		  SwingUtilities.invokeLater(() -> {
 
-				
-					ValueIterationAgent a = new ValueIterationAgent(gmdp);
-					
-					VueGridworldValue vue = new VueGridworldValue(g,a);
-					
-									
-					vue.setVisible(true);
-			
-				}
-			});
+              GridworldMDP gmdp = GridworldMDP.getBridgeGrid();
+              GridworldEnvironnement g = new GridworldEnvironnement(gmdp);
+
+
+              ValueIterationAgent a = new ValueIterationAgent(gmdp);
+
+              VueGridworldValue vue = new VueGridworldValue(g,a);
+
+
+              vue.setVisible(true);
+
+          });
 
 	}
 }

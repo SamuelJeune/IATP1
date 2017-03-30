@@ -49,10 +49,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		this.notifyObs();
 		
 	}
-	
-	
-	
-	
+
 	public ValueIterationAgent(MDP mdp) {
 		this(0.9,mdp);
 
@@ -68,89 +65,30 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	public void updateV(){
 		double vtemp = 0.0;
 		double vsum = 0.0;
-		//delta est utilise pour detecter la convergence de l'algorithme
-		//lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
-		//delta < epsilon
 		this.delta=0.0;
-		//*** VOTRE CODE
 		this.vmax = 0;
 		this.vmin = 0;
 		for (Etat etat : this.mdp.getEtatsAccessibles()) {
-			vtemp = 0.0;
+			vtemp = -Double.MAX_VALUE;
 			for(Action action : this.mdp.getActionsPossibles(etat)) {
-				try {
-					Map<Etat, Double> transitionProba = mdp.getEtatTransitionProba(etat, action);
-					vsum = 0.0;
-					for (Map.Entry<Etat, Double> etatPossible : transitionProba.entrySet()) {
-						vsum += etatPossible.getValue() * (this.mdp.getRecompense(etat, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				vsum = getPsum(etat, vsum, action);
 				vtemp = Math.max(vtemp, vsum);
 			}
-			this.delta = Math.max(this.delta, Math.abs(vtemp - this.V.get(etat)));
-			V.put(etat, vtemp);
+			if (this.mdp.estAbsorbant(etat)){
+                V.put(etat, 0.0);
+				this.delta = Math.max(this.delta, Math.abs(0.0 - this.V.get(etat)));
+			} else {
+                V.put(etat, vtemp);
+				this.delta = Math.max(this.delta, Math.abs(vtemp - this.V.get(etat)));
+			}
 
-
-			// mise a jour vmax et vmin pour affichage du gradient de couleur:
-			//vmax est la valeur  max de V  pour tout s
-			//vmin est la valeur min de V  pour tout s
+			// màj vmin et vmax pour le dégradé :
 			this.vmax = Math.max(this.vmax, this.V.get(etat));
 			this.vmin = Math.min(this.vmin, this.V.get(etat));
 		}
 
-
-		//******************* laisser la notification a la fin de la methode
 		this.notifyObs();
 	}
-
-
-//	public void updateV(){
-//		//delta est utilise pour detecter la convergence de l'algorithme
-//		//lorsque l'on planifie jusqu'a convergence, on arrete les iterations lorsque
-//		//delta < epsilon
-//		this.delta=0.0;
-//		//*** VOTRE CODE
-//
-//
-//
-//		// mise a jour vmax et vmin pour affichage du gradient de couleur:
-//		//vmax est la valeur  max de V  pour tout s
-//		//vmin est la valeur min de V  pour tout s
-//		// ...
-//
-//		//******************* laisser la notification a la fin de la methode
-//
-//        HashMap<Etat, Double> Vk = V;
-//        List<Action> actions = null;
-//        Map<Etat,Double> transition = null;
-//        double maxval = 0;
-//		int sum = 0;
-//        for (Etat etat:this.mdp.getEtatsAccessibles()){
-//            actions = mdp.getActionsPossibles(etat);
-//			sum = 0;
-//            for (Action action:actions){
-//                try{
-//                    transition = mdp.getEtatTransitionProba(etat, action);
-//					for (Map.Entry<Etat, Double> etatPossible : transition.entrySet()) {
-//						sum += etatPossible.getValue() * (this.mdp.getRecompense(etat, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
-//						System.out.println(gamma*(V.get(etatPossible.getKey())));
-//                    }
-//					if (sum>maxval){
-//						maxval = sum;
-//					}
-//                }
-//                catch(Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//			this.delta = Math.max(this.delta, Math.abs(maxval - this.V.get(etat)));
-//			V.put(etat,maxval);
-//			}
-//
-//		this.notifyObs();
-//	}
 
     /**
 	 * renvoi l'action executee par l'agent dans l'etat e 
@@ -179,38 +117,45 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	 */
 	@Override
 
-	public List<Action> getPolitique(Etat _e) {
-		//*** VOTRE CODE
-		// retourne action de meilleure valeur dans _e selon V,
-		// retourne liste vide si aucune action legale (etat absorbant)
-		List<Action> returnactions = new ArrayList<Action>();
-		double psum = 0.0;
-		double ptemp = 0.0;
-		Map<Action, Double> ptempList = new HashMap<>();
+	public List<Action> getPolitique(Etat etat) {
+        List<Action> returnactions = new ArrayList<Action>();
+        Double max = -Double.MAX_VALUE;
 
-		for(Action action : this.mdp.getActionsPossibles(_e)) {
-			try {
-				Map<Etat, Double> transitionProba = mdp.getEtatTransitionProba(_e, action);
-				psum = 0.0;
-				for (Map.Entry<Etat, Double> etatPossible : transitionProba.entrySet()) {
-					psum += etatPossible.getValue() * (this.mdp.getRecompense(_e, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			ptempList.put(action, psum);
-			ptemp = Math.max(ptemp, psum);
-		}
+        for (Action action : mdp.getActionsPossibles(etat)){
+            try {
+                Double sum = 0.0;
+                sum = getPsum(etat, sum, action);
+                if(sum >= max){
+                    if(sum.equals(max)){
+                        returnactions.add(action);
+                    }
+                    else {
+                        max = sum;
+                        returnactions.clear();
+                        returnactions.add(action);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
-		for (Map.Entry<Action, Double> ptempListPossible : ptempList.entrySet()) {
-			if(ptempListPossible.getValue() == ptemp)
-				returnactions.add(ptempListPossible.getKey());
-		}
-
-		return returnactions;
+        return returnactions;
 
 	}
 
+	private double getPsum(Etat etat, double psum, Action action) {
+		try {
+            Map<Etat, Double> transitionProba = mdp.getEtatTransitionProba(etat, action);
+            psum = 0.0;
+            for (Map.Entry<Etat, Double> etatPossible : transitionProba.entrySet()) {
+                psum += etatPossible.getValue() * (this.mdp.getRecompense(etat, action, etatPossible.getKey()) + this.gamma * this.V.get(etatPossible.getKey()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return psum;
+	}
 
 
 	@Override
@@ -224,10 +169,6 @@ public class ValueIterationAgent extends PlanningValueAgent{
 		}
 		this.notifyObs();
 	}
-
-	
-
-	
 
 	public HashMap<Etat,Double> getV() {
 		return V;
