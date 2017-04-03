@@ -841,4 +841,11 @@ public class StateGamePacman implements Etat//TODO verifier hashcode, equals et 
 		return clone;
 	}
 
+	public ArrayList<StateAgentPacman> getPacmans_states() {
+		return pacmans_states;
+	}
+
+	public ArrayList<StateAgentPacman> getGhosts_states() {
+		return ghosts_states;
+	}
 }

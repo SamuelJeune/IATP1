@@ -13,22 +13,16 @@ import javafx.stage.Stage;
 
 import javax.swing.JFrame;
 
-import pacman.environnementRL.EnvironnementPacmanFeatureRL;
 import pacman.environnementRL.EnvironnementPacmanMDPClassic;
 import pacman.environnementRL.EnvironnementPacmanRL;
-import pacman.environnementRL.EtatPacmanMDPClassic;
 import pacman.graphics.GamePacmanPanel;
 import agent.rlagent.QLearningAgent;
 import agent.rlagent.RLAgent;
-import agent.rlapproxagent.FeatureFunction;
-import agent.rlapproxagent.FeatureFunctionIdentity;
-import agent.rlapproxagent.FeatureFunctionPacman;
-import agent.rlapproxagent.QLApproxAgent;
 import agent.strategy.StrategyExplorationTest1;
 
 public class testRLPacman extends Application{
 	/** type de labyrinthe pour le jeu de pacman*/
-	static String mazename = "pacmanlayouts/mediumGrid.lay";//smallGrid smallGrid2 mediumGrid
+	static String mazename = "pacmanlayouts/smallGrid.lay";//smallGrid smallGrid2 mediumGrid
 
 	// parametres RL*/
 	static double gamma=0.8;
@@ -49,7 +43,7 @@ public class testRLPacman extends Application{
 	/** pour afficher jeu de pacman en mode greedy */
 	static boolean DISPLAYPACMANGAME = true;
 	/** pour afficher courbe (somme des rec par episode) a la fin  */
-	static boolean DISPLAYCHART = true;
+	static boolean DISPLAYCHART = false;
 	/** //met un point tous les DELTA_DISPLAY epi */
 	static int DELTA_DISPLAY = 5;
 

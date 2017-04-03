@@ -5,13 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import util.HashMapUtil;
-
 import java.util.HashMap;
 
 import environnement.Action;
 import environnement.Etat;
-import environnement.IllegalActionException;
 import environnement.MDP;
 import environnement.Action2D;
 

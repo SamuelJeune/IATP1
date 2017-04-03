@@ -9,12 +9,10 @@ import pacman.agent.RandomPacmanAgent;
 import pacman.elements.ActionPacman;
 import pacman.elements.MazeException;
 import pacman.elements.MazePacman;
-import pacman.elements.StateAgentPacman;
 import pacman.elements.StateGamePacman;
 import pacman.game.GamePacman;
 import environnement.Action;
 import environnement.Action2D;
-import environnement.Environnement;
 import environnement.Etat;
 
 

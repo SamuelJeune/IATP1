@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import pacman.agent.RandomPacmanAgent;
 import pacman.elements.ActionPacman;
 import pacman.elements.MazeException;
-import pacman.elements.MazePacman;
 import pacman.elements.StateAgentPacman;
 import pacman.elements.StateGamePacman;
 import pacman.game.GamePacman;

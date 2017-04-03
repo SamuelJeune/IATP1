@@ -4,7 +4,6 @@ import javax.swing.SwingUtilities;
 
 import vueGridworld.VueGridworldValue;
 import agent.planningagent.AgentRandom;
-import agent.planningagent.ValueIterationAgent;
 import environnement.gridworld.GridworldEnvironnement;
 import environnement.gridworld.GridworldMDP;
 

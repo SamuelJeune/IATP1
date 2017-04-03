@@ -35,9 +35,6 @@ public class QLearningAgent extends RLAgent {
 			Environnement _env) {
 		super(alpha, gamma,_env);
 		qvaleurs = new HashMap<Etat,HashMap<Action,Double>>();
-		
-		
-	
 	}
 
 
@@ -57,24 +54,44 @@ public class QLearningAgent extends RLAgent {
 			System.out.println("aucune action legale");
 			return new ArrayList<Action>();
 			
+		}else{
+			//*** VOTRE CODE
+			double valeurAction = 0;
+			for (Action a : this.getActionsLegales(e)) {
+				if(this.getQValeur(e,a)>valeurAction){
+					returnactions.clear();
+					returnactions.add(a);
+					valeurAction=this.getQValeur(e,a);
+				}else if(this.getQValeur(e,a)==valeurAction){
+					returnactions.add(a);
+				}
+			}
 		}
-		
-		//*** VOTRE CODE
+
 		return returnactions;
-		
-		
 	}
 	
 	@Override
 	public double getValeur(Etat e) {
 		//*** VOTRE CODE
-		return 0.0;
+		double valeurAction = 0.0;
+		for (Action a : this.getActionsLegales(e)) {
+			if(this.getQValeur(e,a)>valeurAction){
+				valeurAction=this.getQValeur(e,a);
+			}
+		}
+		return valeurAction;
 		
 	}
 
 	@Override
 	public double getQValeur(Etat e, Action a) {
 		//*** VOTRE CODE
+		if(qvaleurs.containsKey(e)){
+			if(qvaleurs.get(e).containsKey(a)){
+				return qvaleurs.get(e).get(a);
+			}
+		}
 		return 0;
 	}
 	
@@ -83,7 +100,18 @@ public class QLearningAgent extends RLAgent {
 	@Override
 	public void setQValeur(Etat e, Action a, double d) {
 		//*** VOTRE CODE
-		
+
+		if(qvaleurs.containsKey(e)){
+			if(qvaleurs.get(e).containsKey(a)){
+				qvaleurs.get(e).replace(a,d);
+			}else{
+				qvaleurs.get(e).put(a,d);
+			}
+		}else{
+			HashMap<Action,Double> aValeur = new HashMap<>();
+			aValeur.put(a,d);
+			qvaleurs.put(e, aValeur);
+		}
 		
 		// mise a jour vmax et vmin pour affichage du gradient de couleur:
 				//vmax est la valeur de max pour tout s de V
@@ -110,6 +138,8 @@ public class QLearningAgent extends RLAgent {
 			System.out.println("QL mise a jour etat "+e+" action "+a+" etat' "+esuivant+ " r "+reward);
 
 		//*** VOTRE CODE
+		double valeurAction = reward+gamma*(getValeur(esuivant));
+		setQValeur(e,a,valeurAction);
 	}
 
 	@Override
@@ -122,7 +152,7 @@ public class QLearningAgent extends RLAgent {
 	public void reset() {
 		super.reset();
 		//*** VOTRE CODE
-		
+		qvaleurs.clear();
 		this.episodeNb =0;
 		this.notifyObs();
 	}

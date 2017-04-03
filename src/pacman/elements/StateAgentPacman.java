@@ -1,8 +1,5 @@
 package pacman.elements;
 
-import environnement.Etat;
-import environnement.Etat2D;
-
 /**
  * La classe decrit l'etat d'un agent (pacman ou ghost)  dans le jeu pacman 
  * <li> position 2D initiale, actuelle, ancienne

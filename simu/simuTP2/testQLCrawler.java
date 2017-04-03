@@ -1,7 +1,6 @@
 package simuTP2;
 
 import indicateursJFX.IndicateurSumRwdPerEpisodeOnline;
-import indicateursJFX.IndicateursMeanSumRwd;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -12,15 +11,11 @@ import javax.swing.SwingUtilities;
 
 import environnement.Environnement;
 import environnement.crawler.CrawlingRobotEnvironnement;
-import environnement.gridworld.GridworldEnvironnement;
-import environnement.gridworld.GridworldMDP;
 import agent.ValueAgent;
 import agent.rlagent.QLearningAgent;
 import agent.rlagent.RLAgent;
 import vueCrawler.VueCrawlerAbstrait;
-import vueCrawler.VueCrawlerManuel;
 import vueCrawler.VueCrawlerRL;
-import vueGridworld.VueGridworldRL;
 
 public class testQLCrawler  extends Application{
 	static Environnement g ;
