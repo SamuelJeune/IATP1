@@ -31,9 +31,8 @@ public class QLearningAgent extends RLAgent {
 	 * @param nbS attention ici il faut tous les etats (meme obstacles) car Q avec tableau ...
 	 * @param nbA
 	 */
-	public QLearningAgent(double alpha, double gamma,
-			Environnement _env) {
-		super(alpha, gamma,_env);
+	public QLearningAgent(double alpha, double gamma, Environnement env) {
+		super(alpha, gamma,env);
 		qvaleurs = new HashMap<Etat,HashMap<Action,Double>>();
 	}
 
@@ -58,16 +57,15 @@ public class QLearningAgent extends RLAgent {
 			//*** VOTRE CODE
 			double valeurAction = 0;
 			for (Action a : this.getActionsLegales(e)) {
-				if(this.getQValeur(e,a)>valeurAction){
+				if (this.getQValeur(e,a)>valeurAction){
 					returnactions.clear();
 					returnactions.add(a);
-					valeurAction=this.getQValeur(e,a);
-				}else if(this.getQValeur(e,a)==valeurAction){
+					valeurAction = this.getQValeur(e,a);
+				} else if (this.getQValeur(e,a) == valeurAction){
 					returnactions.add(a);
 				}
 			}
 		}
-
 		return returnactions;
 	}
 	
@@ -76,8 +74,8 @@ public class QLearningAgent extends RLAgent {
 		//*** VOTRE CODE
 		double valeurAction = 0.0;
 		for (Action a : this.getActionsLegales(e)) {
-			if(this.getQValeur(e,a)>valeurAction){
-				valeurAction=this.getQValeur(e,a);
+			if (this.getQValeur(e,a)>valeurAction){
+				valeurAction = this.getQValeur(e,a);
 			}
 		}
 		return valeurAction;
@@ -87,8 +85,8 @@ public class QLearningAgent extends RLAgent {
 	@Override
 	public double getQValeur(Etat e, Action a) {
 		//*** VOTRE CODE
-		if(qvaleurs.containsKey(e)){
-			if(qvaleurs.get(e).containsKey(a)){
+		if (qvaleurs.containsKey(e)){
+			if (qvaleurs.get(e).containsKey(a)){
 				return qvaleurs.get(e).get(a);
 			}
 		}
@@ -101,13 +99,13 @@ public class QLearningAgent extends RLAgent {
 	public void setQValeur(Etat e, Action a, double d) {
 		//*** VOTRE CODE
 
-		if(qvaleurs.containsKey(e)){
-			if(qvaleurs.get(e).containsKey(a)){
+		if (qvaleurs.containsKey(e)){
+			if (qvaleurs.get(e).containsKey(a)){
 				qvaleurs.get(e).replace(a,d);
-			}else{
+			} else {
 				qvaleurs.get(e).put(a,d);
 			}
-		}else{
+		} else {
 			HashMap<Action,Double> aValeur = new HashMap<>();
 			aValeur.put(a,d);
 			qvaleurs.put(e, aValeur);
@@ -138,7 +136,7 @@ public class QLearningAgent extends RLAgent {
 			System.out.println("QL mise a jour etat "+e+" action "+a+" etat' "+esuivant+ " r "+reward);
 
 		//*** VOTRE CODE
-		double valeurAction = reward+gamma*(getValeur(esuivant));
+		double valeurAction = reward + gamma * (getValeur(esuivant));
 		setQValeur(e,a,valeurAction);
 	}
 

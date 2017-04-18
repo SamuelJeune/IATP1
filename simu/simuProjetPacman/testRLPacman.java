@@ -43,7 +43,7 @@ public class testRLPacman extends Application{
 	/** pour afficher jeu de pacman en mode greedy */
 	static boolean DISPLAYPACMANGAME = true;
 	/** pour afficher courbe (somme des rec par episode) a la fin  */
-	static boolean DISPLAYCHART = false;
+	static boolean DISPLAYCHART = true;
 	/** //met un point tous les DELTA_DISPLAY epi */
 	static int DELTA_DISPLAY = 5;
 
