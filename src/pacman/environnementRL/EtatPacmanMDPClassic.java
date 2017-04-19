@@ -55,7 +55,7 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
         }
     }
 	private ArrayList<Position> ghosts;
-	private ArrayList<Position> dots;
+	private ArrayList<Position> food;
 	private ArrayList<Position> pacmen;
 
 	EtatPacmanMDPClassic(StateGamePacman stateGamePacman){
@@ -76,12 +76,12 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 			}
 		}
 
-		//Dots
-		this.dots = new ArrayList<>();
+		//Food
+		this.food = new ArrayList<>();
 		for(int i = 0; i < stateGamePacman.getMaze().getSizeX(); i++){
 			for(int j = 0; j < stateGamePacman.getMaze().getSizeY(); j++){
 				if(stateGamePacman.getMaze().isFood(i, j)){
-					this.dots.add(new Position(i, j));
+					this.food.add(new Position(i, j));
 				}
 			}
 		}
@@ -96,7 +96,7 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 	@Override
 	public int hashCode() {
 		int result = ghosts != null ? ghosts.hashCode() : 0;
-		result = PRIME_NUMBER * result + (dots != null ? dots.hashCode() : 0);
+		result = PRIME_NUMBER * result + (food != null ? food.hashCode() : 0);
 		result = PRIME_NUMBER * result + (pacmen != null ? pacmen.hashCode() : 0);
 		return result;
 	}
@@ -113,8 +113,6 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 			cnse.printStackTrace(System.err);
 		}
 
-
-
 		// on renvoie le clone
 		return clone;
 	}
@@ -126,7 +124,7 @@ public class EtatPacmanMDPClassic implements Etat , Cloneable{
 
         EtatPacmanMDPClassic that = (EtatPacmanMDPClassic) o;
 
-        return (ghosts != null ? ghosts.equals(that.ghosts) : that.ghosts == null) && (dots != null ? dots.equals(that.dots) : that.dots == null) && (pacmen != null ? pacmen.equals(that.pacmen) : that.pacmen == null);
+        return (ghosts != null ? ghosts.equals(that.ghosts) : that.ghosts == null) && (food != null ? food.equals(that.food) : that.food == null) && (pacmen != null ? pacmen.equals(that.pacmen) : that.pacmen == null);
     }
 
 	

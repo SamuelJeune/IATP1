@@ -36,9 +36,6 @@ public class QLearningAgent extends RLAgent {
 		qvaleurs = new HashMap<Etat,HashMap<Action,Double>>();
 	}
 
-
-	
-	
 	/**
 	 * renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
 	 *  (plusieurs actions sont renvoyees si valeurs identiques)
@@ -49,23 +46,26 @@ public class QLearningAgent extends RLAgent {
 		// retourne action de meilleures valeurs dans _e selon Q : utiliser getQValeur()
 		// retourne liste vide si aucune action legale (etat terminal)
 		List<Action> returnactions = new ArrayList<Action>();
-		if (this.getActionsLegales(e).size() == 0){//etat  absorbant; impossible de le verifier via environnement
-			System.out.println("aucune action legale");
+		List<Action> actionsLegales = this.getActionsLegales(e);
+		if (actionsLegales.isEmpty()){
+			System.out.println("Aucune action légale");
 			return new ArrayList<Action>();
-			
-		}else{
-			//*** VOTRE CODE
-			double valeurAction = 0;
-			for (Action a : this.getActionsLegales(e)) {
-				if (this.getQValeur(e,a)>valeurAction){
-					returnactions.clear();
-					returnactions.add(a);
-					valeurAction = this.getQValeur(e,a);
-				} else if (this.getQValeur(e,a) == valeurAction){
-					returnactions.add(a);
-				}
+		}
+
+		double maxVal = -Double.MAX_VALUE;
+
+		for(Action action : actionsLegales)
+		{
+			double qValeur = this.getQValeur(e, action);
+			if (qValeur > maxVal) {
+				returnactions.clear();
+				returnactions.add(action);
+				maxVal = qValeur;
+			} else if (qValeur == maxVal) {
+				returnactions.add(action);
 			}
 		}
+
 		return returnactions;
 	}
 	
@@ -110,11 +110,9 @@ public class QLearningAgent extends RLAgent {
 			aValeur.put(a,d);
 			qvaleurs.put(e, aValeur);
 		}
-		
-		// mise a jour vmax et vmin pour affichage du gradient de couleur:
-				//vmax est la valeur de max pour tout s de V
-				//vmin est la valeur de min pour tout s de V
-				// ...
+
+        this.vmax = Math.max(d, vmax);
+        this.vmin = Math.min(d, vmin);
 		
 		
 		this.notifyObs();
@@ -136,7 +134,7 @@ public class QLearningAgent extends RLAgent {
 			System.out.println("QL mise a jour etat "+e+" action "+a+" etat' "+esuivant+ " r "+reward);
 
 		//*** VOTRE CODE
-		double valeurAction = reward + gamma * (getValeur(esuivant));
+		double valeurAction = ((1 - alpha) * this.getQValeur(e, a)) + (alpha * (reward + gamma * this.getValeur(esuivant)));
 		setQValeur(e,a,valeurAction);
 	}
 

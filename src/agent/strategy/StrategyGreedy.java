@@ -17,7 +17,8 @@ public class StrategyGreedy extends StrategyExploration{
 	 */
 	protected double epsilon;
 	private Random rand=new Random();
-	
+
+    private List<Action> actions;
 	
 	
 	public StrategyGreedy(RLAgent agent,double epsilon) {
@@ -26,24 +27,20 @@ public class StrategyGreedy extends StrategyExploration{
 	}
 
 	@Override
-	public Action getAction(Etat _e) {//renvoi null si _e absorbant
-		double d =rand.nextDouble();
-		List<Action> actions;
-		if (this.agent.getActionsLegales(_e).isEmpty()){
+	public Action getAction(Etat e) {//renvoi null si e absorbant
+        actions = this.agent.getActionsLegales(e);
+		if (actions.isEmpty()){
 			return null;
 		}
-	
-		//VOTRE CODE ICI
-		if(d<=epsilon){
-			int action = rand.nextInt(this.agent.getActionsLegales(_e).size());
-			return this.agent.getActionsLegales(_e).get(action);
-		}else{
-			if(this.agent.getPolitique(_e).size()==0){
-				return this.agent.getActionsLegales(_e).get(0);
-			}else{
-				int action = rand.nextInt(this.agent.getPolitique(_e).size());
-				return this.agent.getPolitique(_e).get(action);
-			}
+
+		if (rand.nextDouble() <= epsilon) {
+			return actions.get(rand.nextInt(actions.size()));
+		} else {
+			List<Action> politique = this.agent.getPolitique(e);
+			if (politique.isEmpty())
+				return null;
+			else
+				return politique.get(rand.nextInt(politique.size()));
 		}
 	}
 
